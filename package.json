@@ -22,10 +22,7 @@
     "version:patch": "npm version patch && npm publish",
     "version:minor": "npm version minor && npm publish",
     "version:major": "npm version major && npm publish",
-    "publish:patch": "bun run build && npm version patch && npm publish",
-    "publish:minor": "bun run build && npm version minor && npm publish",
-    "publish:major": "bun run build && npm version major && npm publish",
-    "prepublishOnly": "bun run build && bun test"
+    "prepublish": "bun run build && bun test"
   },
   "keywords": [
     "npm",
