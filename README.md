@@ -3,7 +3,7 @@
 <p align="center"><strong>fncu</strong> (fast-ncu) is a blazing-fast CLI tool for checking npm package updates, built with Bun for maximum performance.</p>
 
 <p align="center">
-  <img src="./docs/fast-ncu-splash.png" alt="fncu CLI splash" width="80%" />
+  <img src="https://raw.githubusercontent.com/uchkunrakhimow/fast-ncu/refs/heads/master/docs/fast-ncu-splash.png" alt="fncu CLI splash" width="80%" />
 </p>
 
 ---
