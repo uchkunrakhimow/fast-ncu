@@ -6,14 +6,11 @@ import type { PkgManager } from "../types";
 export async function detectPkgManager(): Promise<PkgManager> {
   const cwd = process.cwd();
 
-  if (
-    existsSync(resolve(cwd, "bun.lockb")) ||
-    existsSync(resolve(cwd, "bun.lock"))
-  ) {
+  if (existsSync(resolve(cwd, "bun.lock"))) {
     return {
       name: "bun",
       installCommand: "bun install",
-      lockFile: "bun.lockb",
+      lockFile: "bun.lock",
     };
   }
 
@@ -44,7 +41,7 @@ export async function detectPkgManager(): Promise<PkgManager> {
           return {
             name: "bun",
             installCommand: "bun install",
-            lockFile: "bun.lockb",
+            lockFile: "bun.lock",
           };
         }
         if (packageManager.startsWith("pnpm")) {
