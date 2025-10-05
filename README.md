@@ -1,79 +1,52 @@
-# fncu
+<p align="center"><code>npm i -g fast-ncu</code><br />or <code>bun install -g fast-ncu</code></p>
 
-[![npm version](https://img.shields.io/npm/v/fast-ncu.svg)](https://www.npmjs.com/package/fast-ncu)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Bun](https://img.shields.io/badge/Bun-latest-000000?logo=bun)](https://bun.sh)
-[![Node.js](https://img.shields.io/badge/Node.js-22+-339933?logo=node.js)](https://nodejs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9+-3178C6?logo=typescript)](https://www.typescriptlang.org)
-[![Downloads](https://img.shields.io/npm/dm/fast-ncu.svg)](https://www.npmjs.com/package/fast-ncu)
+<p align="center"><strong>fncu</strong> (fast-ncu) is a blazing-fast CLI tool for checking npm package updates, built with Bun for maximum performance.</p>
 
-> ⚡ **fncu** (fast-ncu) - A blazing-fast CLI tool for checking npm package updates, built with Bun for maximum performance.
+<p align="center">
+  <img src="./docs/fast-ncu-splash.png" alt="fncu CLI splash" width="80%" />
+</p>
+
+---
+
+## Quickstart
+
+### Installation
+
+```bash
+# Using npm
+npm install -g fast-ncu
+
+# Using Bun
+bun install -g fast-ncu
+```
+
+### Basic Usage
+
+```bash
+# Check for updates
+fncu
+
+# Update package.json
+fncu -u
+
+# JSON output
+fncu --json
+
+# Filter packages
+fncu --filter "react|typescript"
+```
 
 ## ✨ Features
 
-- ⚡ **Ultra-fast** - Parallel fetching with intelligent batching (50 packages per batch)
-- 🎯 **Smart filtering** - Filter packages by name using regex patterns
-- 📊 **Multiple output formats** - Human-readable table or JSON output
+- ⚡ **Ultra-fast** - Parallel fetching with intelligent batching
+- 🎯 **Smart filtering** - Filter packages by name using regex
+- 📊 **Multiple formats** - Human-readable table or JSON output
 - 🎛️ **Flexible targeting** - Choose update level: major, minor, or patch
-- 🏢 **Workspace support** - Check multiple workspaces
 - 🔄 **Auto-upgrade** - Update package.json with latest versions
-- 💾 **Intelligent caching** - Avoid redundant API calls (1000 package cache)
-- 🎨 **Beautiful output** - Clean, colored terminal output with progress indicators
+- 💾 **Intelligent caching** - Avoid redundant API calls
 - 🔧 **Package manager detection** - Auto-detect npm, yarn, pnpm, or bun
-- 📦 **Dual commands** - Use `fncu` (short) or `fast-ncu` (full)
-
-## 🚀 Installation
-
-### Global Installation
-
-```bash
-npm install -g fast-ncu
-```
-
-After installation, you can use either command:
-
-- `fncu` (short version)
-- `fast-ncu` (full version)
-
-### Local Development
-
-```bash
-git clone https://github.com/uchkunrakhimow/fast-ncu
-cd fast-ncu
-bun install
-```
 
 ## 📖 Usage
-
-### Basic Commands
-
-```bash
-# Check for updates (using short command)
-fncu
-
-# Check for updates (using full command)
-fast-ncu
-
-# Check with JSON output
-fncu --json
-# or
-fast-ncu --json
-
-# Update package.json with latest versions
-fncu -u
-# or
-fast-ncu -u
-
-# Filter specific packages
-fncu --filter "react|typescript"
-# or
-fast-ncu --filter "react|typescript"
-
-# Target specific update level
-fncu --target major
-# or
-fast-ncu --target major
-```
 
 ### Command Line Options
 
@@ -84,17 +57,13 @@ fast-ncu --target major
 | `--json`             | `-j`  | Output as JSON                           | `false` |
 | `--target <level>`   | `-t`  | Update target: auto, major, minor, patch | `auto`  |
 | `--workspaces`       | `-w`  | Check workspaces                         | `false` |
-| `--version`          | `-V`  | Show version number                      | -       |
-| `--help`             | `-h`  | Show help information                    | -       |
 
-## 📋 Examples
+### Examples
 
-### Check for updates
+#### Check for updates
 
 ```bash
 fncu
-# or
-fast-ncu
 ```
 
 ```
@@ -112,20 +81,16 @@ fast-ncu
 ⚡ 0.45s
 ```
 
-### Update with filtering
+#### Update with filtering
 
 ```bash
 fncu -u --filter "react|typescript" --target minor
-# or
-fast-ncu -u --filter "react|typescript" --target minor
 ```
 
-### JSON output
+#### JSON output
 
 ```bash
 fncu --json
-# or
-fast-ncu --json
 ```
 
 ```json
@@ -144,14 +109,6 @@ fast-ncu --json
 }
 ```
 
-### Workspace support
-
-```bash
-fncu --workspaces
-# or
-fast-ncu --workspaces
-```
-
 ## 🛠️ Development
 
 ### Prerequisites
@@ -162,6 +119,8 @@ fast-ncu --workspaces
 ### Setup
 
 ```bash
+git clone https://github.com/uchkunrakhimow/fast-ncu
+cd fast-ncu
 bun install
 ```
 
@@ -176,32 +135,17 @@ bun test
 
 # Build for production
 bun run build
-
-# Start the application
-bun start
 ```
 
-### Project Structure
+---
 
-```
-fncu/
-├── bin/
-│   └── fncu.ts              # Entry point
-├── lib/
-│   ├── core/
-│   │   ├── checker.ts        # Main checker exports
-│   │   ├── fetcher.ts        # NPM registry fetching
-│   │   └── updater.ts        # Package.json updating
-│   ├── types/
-│   │   └── index.ts          # All type definitions
-│   ├── utils/
-│   │   ├── log.ts            # Logging utilities
-│   │   ├── pkg.ts            # Package manager detection
-│   │   └── ver.ts            # Version utilities
-│   └── cli.ts                # CLI interface
-├── tests/
-│   └── ver.test.ts           # Version utilities tests
-├── package.json
-├── tsconfig.json
-└── README.md
-```
+## 📚 Documentation
+
+- [**Usage Guide**](./docs/usage.md) - Detailed usage examples
+- [**Contributing**](./docs/contributing.md) - How to contribute
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
