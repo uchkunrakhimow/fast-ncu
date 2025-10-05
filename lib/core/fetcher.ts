@@ -1,10 +1,13 @@
 import { readFileSync } from "fs";
-import { resolve } from "path";
+import { dirname, resolve } from "path";
+import { fileURLToPath } from "url";
 import type { PkgInfo } from "../types";
 
-const packageJson = JSON.parse(
-  readFileSync(resolve(process.cwd(), "package.json"), "utf-8")
-);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const packageJsonPath = resolve(__dirname, "../../package.json");
+const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
 
 const VERSION = packageJson.version;
 const COMMAND_NAME = "fncu";
@@ -53,7 +56,7 @@ class RegistryFetcher {
       }
 
       return null;
-    } catch {
+    } catch (error) {
       return null;
     }
   }

@@ -5,7 +5,6 @@ import { Command } from "commander";
 import { checkUpdates } from "./core/checker";
 import { COMMAND_NAME, FULL_COMMAND_NAME, VERSION } from "./core/fetcher";
 import type { Options } from "./types";
-import { logger } from "./utils/log";
 import { detectPkgManager } from "./utils/pkg";
 
 const program = new Command();
@@ -28,9 +27,9 @@ program
   )
   .option("-w, --workspaces", "check workspaces")
   .action(async (options: Options) => {
-    try {
-      const startTime = Date.now();
+    const startTime = Date.now();
 
+    try {
       const results = await checkUpdates(options);
 
       if (options.json) {
@@ -41,11 +40,11 @@ program
       const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
       if (results.updates.length === 0) {
-        console.log(green("✨ All packages are up to date!"));
+        console.log(green("🎯 All packages are up to date!"));
       } else {
         console.log(
           cyan(
-            `\n📦 ${results.updates.length} update${
+            `\n🔍 ${results.updates.length} update${
               results.updates.length > 1 ? "s" : ""
             } available:\n`
           )
@@ -86,18 +85,32 @@ program
         const packageManager = await detectPkgManager();
 
         if (options.upgrade && results.updates.length > 0) {
-          console.log(green("\n✅ Updated package.json"));
-          console.log(blue(`💡 Run: ${bold(packageManager.installCommand)}`));
+          console.log(green("\n🚀 Updated package.json"));
+          console.log(blue(`⚡ Run: ${bold(packageManager.installCommand)}`));
         } else if (!options.upgrade && results.updates.length > 0) {
           console.log(
-            yellow(`\n💡 Run: ${bold(`${COMMAND_NAME} -u`)} to update`)
+            yellow(`\n🔧 Run: ${bold(`${COMMAND_NAME} -u`)} to update`)
           );
         }
       }
 
-      console.log(cyan(`⚡ ${duration}s`));
+      console.log(cyan(`⚡ Completed in ${duration}s`));
     } catch (error) {
-      logger.error("Failed to check updates:", error);
+      const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+
+      if (error instanceof Error) {
+        if (error.message.includes("package.json not found")) {
+          console.error(`${error.message}\n⚡ Failed after ${duration}s`);
+        } else if (error.message.includes("Network connection failed")) {
+          console.error(`${error.message}\n⚡ Failed after ${duration}s`);
+        } else if (error.message.includes("Invalid package.json")) {
+          console.error(`${error.message}\n⚡ Failed after ${duration}s`);
+        } else {
+          console.error(`🚨 Unexpected error\n⚡ Failed after ${duration}s`);
+        }
+      } else {
+        console.error(`🚨 Unexpected error\n⚡ Failed after ${duration}s`);
+      }
       process.exit(1);
     }
   });

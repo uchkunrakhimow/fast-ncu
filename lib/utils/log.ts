@@ -9,11 +9,11 @@ class Logger {
   }
 
   success(message: string, ...args: unknown[]): void {
-    console.log(green(`✅ ${message}`), ...args);
+    console.log(green(`🎯 ${message}`), ...args);
   }
 
   error(message: string, ...args: unknown[]): void {
-    console.error(red(`❌ ${message}`), ...args);
+    console.error(red(`🚨 ${message}`), ...args);
   }
 
   warn(message: string, ...args: unknown[]): void {
@@ -29,12 +29,12 @@ class Logger {
   }
 
   progress(message: string): void {
-    console.log(gray(`⏳ ${message}`));
+    console.log(gray(`⚙️  ${message}`));
   }
 
   debug(message: string, ...args: unknown[]): void {
     if (process.env.DEBUG) {
-      console.log(gray(`🐛 ${message}`), ...args);
+      console.log(gray(`🔍 ${message}`), ...args);
     }
   }
 }

@@ -3,7 +3,6 @@ import { readFile, writeFile } from "fs/promises";
 import { dirname, resolve } from "path";
 import semver from "semver";
 import type { Options, Results, Update } from "../types";
-import { logger } from "../utils/log";
 import { getUpdateLevel, shouldUpdate } from "../utils/ver";
 
 interface PackageJson {
@@ -24,7 +23,7 @@ function findPackageJson(): string {
   }
 
   throw new Error(
-    "package.json not found in current directory or parent directories"
+    "📁 package.json not found\n" + "🔧 Run from a project directory"
   );
 }
 
@@ -34,8 +33,13 @@ async function loadPackageJson(path?: string): Promise<PackageJson> {
     const content = await readFile(packageJsonPath, "utf-8");
     return JSON.parse(content);
   } catch (error) {
-    logger.error(`Failed to load package.json:`, error);
-    throw error;
+    if (
+      error instanceof Error &&
+      error.message.includes("package.json not found")
+    ) {
+      throw error;
+    }
+    throw new Error("🔍 Invalid package.json\n" + "🔧 Check JSON syntax");
   }
 }
 
@@ -82,12 +86,7 @@ async function updatePackageJson(
 }
 
 export async function checkUpdates(options: Options = {}): Promise<Results> {
-  const {
-    upgrade = false,
-    filter,
-    target = "auto",
-    workspaces = false,
-  } = options;
+  const { upgrade = false, filter, target = "auto" } = options;
 
   try {
     const packageJson = await loadPackageJson();
@@ -104,6 +103,14 @@ export async function checkUpdates(options: Options = {}): Promise<Results> {
 
     const { fetchLatestVersions } = await import("./fetcher");
     const latestVersions = await fetchLatestVersions(packageNames);
+
+    const fetchedCount = Object.keys(latestVersions).length;
+    if (fetchedCount === 0 && packageNames.length > 0) {
+      throw new Error(
+        "🌐 Network connection failed\n" +
+          "🔄 Please check your internet connection and try again"
+      );
+    }
 
     const updates: Update[] = [];
 
@@ -143,7 +150,6 @@ export async function checkUpdates(options: Options = {}): Promise<Results> {
       upgraded: upgrade && updates.length > 0,
     };
   } catch (error) {
-    logger.error("Failed to check updates:", error);
     throw error;
   }
 }
