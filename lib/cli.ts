@@ -126,6 +126,10 @@ program
     const startTime = Date.now();
 
     try {
+      if (options.workspaces && options.upgrade === undefined) {
+        options.upgrade = true;
+      }
+
       const results = await checkUpdates(options);
 
       if (options.json) {
