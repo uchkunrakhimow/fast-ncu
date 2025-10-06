@@ -183,7 +183,16 @@ program
         }
 
         console.log(
-          cyan(`\nRun: ${bold(`${COMMAND_NAME} -u`)} to update all workspaces`)
+          cyan(
+            `\nRun: ${bold(`${COMMAND_NAME} -u`)} to update all workspaces\n` +
+              `Or update a specific workspace:\n` +
+              `  ${bold(`${COMMAND_NAME} -w root`)}  ${dim(
+                `# update only root`
+              )}\n` +
+              `  ${bold(`${COMMAND_NAME} -w <name>`)} ${dim(
+                `# update a workspace, e.g. api`
+              )}`
+          )
         );
         console.log(dim(`Completed in ${duration}s`));
         return;
