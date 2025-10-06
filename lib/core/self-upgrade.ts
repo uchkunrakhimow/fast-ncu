@@ -58,29 +58,46 @@ async function checkUpgrade(): Promise<UpgradeInfo> {
   };
 }
 
-async function runUpgrade(
-  pkgManager: string,
-  installCmd: string
-): Promise<void> {
+async function detectGlobalPackageManager(): Promise<string> {
+  try {
+    const whichProc = Bun.spawn(["which", "fncu"], { stdout: "pipe" });
+    const whichPath = await new Response(whichProc.stdout).text();
+    await whichProc.exited;
+
+    if (whichPath.includes("/.bun/") || whichPath.includes("/bun/")) {
+      return "bun";
+    }
+    return "npm";
+  } catch {
+    return "npm";
+  }
+}
+
+async function installPackage(pkgManager: string): Promise<void> {
+  const args =
+    pkgManager === "bun"
+      ? ["add", "-g", FULL_COMMAND_NAME]
+      : ["install", "-g", FULL_COMMAND_NAME];
+
+  const proc = Bun.spawn([pkgManager, ...args], {
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+
+  await proc.exited;
+
+  if (proc.exitCode !== 0) {
+    throw new Error("Failed to upgrade package");
+  }
+}
+
+async function runUpgrade(pkgManager: string): Promise<void> {
   const spinner = ora({
     text: cyan("Downloading latest version..."),
     spinner: "dots",
   }).start();
 
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  spinner.text = cyan("Installing package...");
-  await new Promise((resolve) => setTimeout(resolve, 300));
-
-  const proc = Bun.spawn([pkgManager, "install", "-g", FULL_COMMAND_NAME], {
-    stdout: "pipe",
-    stderr: "pipe",
-  });
-
-  const decoder = new TextDecoder();
-  let output = "";
   let progress = 0;
-
   const progressInterval = setInterval(() => {
     progress += 10;
     if (progress <= 90) {
@@ -89,26 +106,21 @@ async function runUpgrade(
         "░".repeat(20 - Math.floor(progress / 5));
       spinner.text = cyan(`Installing ${bar} ${progress}%`);
     }
-  }, 200);
+  }, 150);
 
-  for await (const chunk of proc.stdout) {
-    output += decoder.decode(chunk);
-  }
-
-  await proc.exited;
-  clearInterval(progressInterval);
-
-  if (proc.exitCode === 0) {
-    spinner.text = green("Installation complete ✓");
-    spinner.succeed();
-  } else {
+  try {
+    await installPackage(pkgManager);
+    clearInterval(progressInterval);
+    spinner.succeed(green("Installation complete"));
+  } catch (error) {
+    clearInterval(progressInterval);
     spinner.fail(red("Installation failed"));
-    throw new Error("Failed to upgrade package");
+    throw error;
   }
 }
 
 export async function selfUpgrade(): Promise<void> {
-  console.log(cyan(`\n🔍 Checking for ${COMMAND_NAME} updates...\n`));
+  console.log(cyan(`\nChecking for ${COMMAND_NAME} updates...\n`));
 
   const startTime = Date.now();
 
@@ -116,60 +128,34 @@ export async function selfUpgrade(): Promise<void> {
     const info = await checkUpgrade();
 
     if (!info.needsUpgrade) {
-      console.log(green(`✨ Already on latest version (${info.current})`));
+      console.log(green(`Already on latest version (${info.current})`));
       console.log(
-        cyan(`⚡ Completed in ${((Date.now() - startTime) / 1000).toFixed(2)}s`)
+        cyan(`Completed in ${((Date.now() - startTime) / 1000).toFixed(2)}s\n`)
       );
       return;
     }
 
     console.log(
-      yellow(`📦 New version available: ${info.current} → ${info.latest}\n`)
+      yellow(`New version available: ${info.current} → ${info.latest}\n`)
     );
 
-    let globalPkgManager = "npm";
+    const pkgManager = await detectGlobalPackageManager();
+    await runUpgrade(pkgManager);
 
-    try {
-      const bunCheck = Bun.spawn(["bun", "--version"], {
-        stdout: "pipe",
-        stderr: "pipe",
-      });
-      await bunCheck.exited;
-
-      if (bunCheck.exitCode === 0) {
-        const bunList = Bun.spawn(["bun", "pm", "ls", "-g"], {
-          stdout: "pipe",
-        });
-        const bunOutput = await new Response(bunList.stdout).text();
-        await bunList.exited;
-
-        if (bunOutput.includes("fast-ncu")) {
-          globalPkgManager = "bun";
-        }
-      }
-    } catch {
-      globalPkgManager = "npm";
-    }
-
-    await runUpgrade(
-      globalPkgManager,
-      globalPkgManager === "bun" ? "bun install -g" : "npm install -g"
-    );
-
-    console.log(green(`\n🎉 Successfully upgraded to ${info.latest}!`));
+    console.log(green(`\nSuccessfully upgraded to ${info.latest}`));
     console.log(
-      cyan(`⚡ Completed in ${((Date.now() - startTime) / 1000).toFixed(2)}s\n`)
+      cyan(`Completed in ${((Date.now() - startTime) / 1000).toFixed(2)}s\n`)
     );
   } catch (error) {
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
     if (error instanceof Error) {
-      console.error(red(`\n❌ ${error.message}`));
+      console.error(red(`\n${error.message}`));
     } else {
-      console.error(red("\n❌ Unexpected error occurred"));
+      console.error(red("\nUnexpected error occurred"));
     }
 
-    console.log(cyan(`⚡ Failed after ${duration}s`));
+    console.log(cyan(`Failed after ${duration}s\n`));
     process.exit(1);
   }
 }
