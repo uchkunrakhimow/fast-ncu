@@ -20,8 +20,11 @@ fncu -u
 # Upgrade fncu to the latest version
 fncu upgrade
 
-# Check workspaces in monorepo
-fncu --workspaces
+# Auto-detect and check workspaces
+fncu
+
+# Check specific workspace
+fncu -w api
 ```
 
 ## ✨ Features

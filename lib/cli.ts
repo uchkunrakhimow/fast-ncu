@@ -118,7 +118,10 @@ program
     "upgrade version target: auto, major, minor, patch",
     "auto"
   )
-  .option("-w, --workspaces", "check workspaces in monorepo")
+  .option(
+    "-w, --workspaces [name]",
+    "check workspaces: all, root, or specific workspace name"
+  )
   .action(async (options: Options) => {
     const startTime = Date.now();
 
@@ -150,6 +153,34 @@ program
 
         const packageManager = await detectPkgManager();
         console.log(cyan(`Run: ${bold(packageManager.installCommand)}`));
+        console.log(dim(`Completed in ${duration}s`));
+        return;
+      }
+
+      if (results.workspaces && results.workspaces.length > 0) {
+        console.log(
+          cyan(
+            `\nMonorepo detected (${results.workspaces.length} workspace${
+              results.workspaces.length > 1 ? "s" : ""
+            })`
+          )
+        );
+
+        for (const workspace of results.workspaces) {
+          console.log(
+            bold(
+              `\n${workspace.name} ${dim(`(${workspace.path})`)} - ${
+                workspace.updates.length
+              } update${workspace.updates.length > 1 ? "s" : ""}:`
+            )
+          );
+          console.log();
+          renderTable(workspace.updates);
+        }
+
+        console.log(
+          cyan(`\nRun: ${bold(`${COMMAND_NAME} -u`)} to update all workspaces`)
+        );
         console.log(dim(`Completed in ${duration}s`));
         return;
       }

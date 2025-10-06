@@ -11,7 +11,7 @@ export interface Options {
   filter?: string;
   json?: boolean;
   target?: string;
-  workspaces?: boolean;
+  workspaces?: string;
 }
 
 export interface WorkspacePackage {
@@ -24,6 +24,13 @@ export interface Results {
   updates: Update[];
   total: number;
   upgraded: boolean;
+  workspaces?: WorkspaceResult[];
+}
+
+export interface WorkspaceResult {
+  name: string;
+  path: string;
+  updates: Update[];
 }
 
 export interface PkgInfo {

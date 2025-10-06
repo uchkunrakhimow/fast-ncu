@@ -1,6 +1,6 @@
 {
   "name": "fast-ncu",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "fncu - A blazing-fast CLI tool for checking npm package updates",
   "type": "module",
   "bin": {
@@ -19,7 +19,8 @@
     "dev:watch": "bun --watch bin/fncu.ts",
     "build": "bun build bin/fncu.ts --outfile=dist/fncu.js --target=node",
     "test": "bun test",
-    "prepublishOnly": "bun run build"
+    "prepublishOnly": "bun run build",
+    "start": "bun run bin/fncu.ts"
   },
   "keywords": [
     "npm",

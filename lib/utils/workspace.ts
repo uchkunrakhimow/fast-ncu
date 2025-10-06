@@ -3,7 +3,6 @@ import { readFile, readdir } from "fs/promises";
 import { join, resolve } from "path";
 import type { WorkspacePackage } from "../types";
 
-const WORKSPACE_GLOB_SUFFIX = "/*";
 const PNPM_WORKSPACE_FILE = "pnpm-workspace.yaml";
 const PNPM_PACKAGE_PATTERN = /packages:\s*\n((?:\s+-\s+.+\n?)+)/;
 const YAML_LIST_ITEM_PATTERN = /^-\s+['"]?|['"]?$/g;
@@ -18,7 +17,7 @@ async function readPackageJson(path: string): Promise<Record<string, unknown>> {
 }
 
 function cleanWorkspacePattern(pattern: string): string {
-  return pattern.replace(new RegExp(`${WORKSPACE_GLOB_SUFFIX}$`), "");
+  return pattern.replace(/\/\*$/, "");
 }
 
 function isValidPackage(packageJson: Record<string, unknown>): boolean {

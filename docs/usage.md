@@ -10,13 +10,13 @@ This guide covers essential usage of fncu (fast-ncu) for checking and updating n
 
 ## Options
 
-| Option               | Short | Description                              | Default |
-| -------------------- | ----- | ---------------------------------------- | ------- |
-| `--upgrade`          | `-u`  | Upgrade package.json dependencies        | `false` |
-| `--filter <pattern>` | `-f`  | Filter packages by name (regex)          | -       |
-| `--json`             | `-j`  | Output as JSON                           | `false` |
-| `--target <level>`   | `-t`  | Update target: auto, major, minor, patch | `auto`  |
-| `--workspaces`       | `-w`  | Check workspaces in monorepo             | `false` |
+| Option                | Short | Description                              | Default |
+| --------------------- | ----- | ---------------------------------------- | ------- |
+| `--upgrade`           | `-u`  | Upgrade package.json dependencies        | `false` |
+| `--filter <pattern>`  | `-f`  | Filter packages by name (regex)          | -       |
+| `--json`              | `-j`  | Output as JSON                           | `false` |
+| `--target <level>`    | `-t`  | Update target: auto, major, minor, patch | `auto`  |
+| `--workspaces [name]` | `-w`  | Check workspaces: all, root, or name     | auto    |
 
 ## Basic Examples
 
@@ -147,58 +147,81 @@ fncu -u --workspaces --filter "@myorg"
 
 ## Monorepo / Workspaces
 
-fncu supports monorepo workspaces for npm, yarn, pnpm, and bun.
+fncu automatically detects monorepos and supports workspace-specific operations.
 
-### Workspace Detection
+### Automatic Detection
 
-Automatically detects workspaces from:
+Monorepos are automatically detected from:
+
 - `package.json` with `workspaces` field (npm/yarn/bun)
 - `pnpm-workspace.yaml` (pnpm)
+
+### Workspace Options
+
+```bash
+# Auto-detect and check all workspaces
+fncu
+
+# Explicitly check all workspaces
+fncu -w all
+
+# Check only root package
+fncu -w root
+
+# Check specific workspace by name
+fncu -w api
+fncu -w ui
+fncu -w @myorg/shared
+```
 
 ### Examples
 
 ```bash
-# Check all packages in monorepo
-fncu --workspaces
+# Check all workspaces (auto-detected)
+fncu
 
-# Update all workspace packages
-fncu -u --workspaces
+# Update all workspaces
+fncu -u
 
-# Filter workspace packages
-fncu --workspaces --filter "@myorg"
+# Update only root package
+fncu -u -w root
 
-# Target specific update levels
-fncu --workspaces --target minor
+# Update specific workspace
+fncu -u -w api
+
+# Filter packages in specific workspace
+fncu -w ui --filter "react"
+
+# Target specific update levels in workspace
+fncu -w api --target minor
 ```
 
 ### Workspace Structure
 
 Supported workspace patterns:
+
 ```json
 {
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ]
+  "workspaces": ["packages/*", "apps/*"]
 }
 ```
 
 Or:
+
 ```json
 {
   "workspaces": {
-    "packages": [
-      "packages/*"
-    ]
+    "packages": ["packages/*"]
   }
 }
 ```
 
 For pnpm:
+
 ```yaml
 packages:
-  - 'packages/*'
-  - 'apps/*'
+  - "packages/*"
+  - "apps/*"
 ```
 
 ## Configuration

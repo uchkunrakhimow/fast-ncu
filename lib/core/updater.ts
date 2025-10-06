@@ -1,8 +1,8 @@
 import { existsSync } from "fs";
 import { readFile, writeFile } from "fs/promises";
-import { dirname, join, resolve } from "path";
+import { dirname, join, relative, resolve } from "path";
 import semver from "semver";
-import type { Options, Results, Update } from "../types";
+import type { Options, Results, Update, WorkspaceResult } from "../types";
 import { getUpdateLevel, shouldUpdate } from "../utils/version";
 import { detectWorkspaces, getAllDependencies } from "../utils/workspace";
 
@@ -209,8 +209,27 @@ async function processRootPackage(options: Options): Promise<Results> {
   };
 }
 
+function shouldProcessWorkspace(
+  workspaceName: string,
+  workspaceOption?: string
+): boolean {
+  if (
+    !workspaceOption ||
+    workspaceOption === "all" ||
+    workspaceOption === "true"
+  ) {
+    return true;
+  }
+
+  if (workspaceOption === "root") {
+    return workspaceName === "root";
+  }
+
+  return workspaceName === workspaceOption;
+}
+
 async function processWorkspaces(options: Options): Promise<Results> {
-  const { upgrade = false, filter, target = "auto" } = options;
+  const { upgrade = false, filter, target = "auto", workspaces } = options;
 
   const rootDir = dirname(findPackageJson());
   const workspacePackages = await detectWorkspaces(rootDir);
@@ -220,26 +239,46 @@ async function processWorkspaces(options: Options): Promise<Results> {
   }
 
   const allUpdates: Update[] = [];
+  const workspaceResults: WorkspaceResult[] = [];
   let totalDeps = 0;
 
-  const rootPackageJson = await loadPackageJson();
-  const rootDeps = {
-    ...rootPackageJson.dependencies,
-    ...rootPackageJson.devDependencies,
-  };
+  if (shouldProcessWorkspace("root", workspaces)) {
+    const rootPackageJson = await loadPackageJson();
+    const rootDeps = {
+      ...rootPackageJson.dependencies,
+      ...rootPackageJson.devDependencies,
+    };
 
-  if (Object.keys(rootDeps).length > 0) {
-    const rootUpdates = await findUpdatesForPackages(rootDeps, target, filter);
-    allUpdates.push(...rootUpdates);
-    totalDeps += Object.keys(rootDeps).length;
+    if (Object.keys(rootDeps).length > 0) {
+      const rootUpdates = await findUpdatesForPackages(
+        rootDeps,
+        target,
+        filter
+      );
 
-    if (upgrade && rootUpdates.length > 0) {
-      const updated = applyUpdates(rootPackageJson, rootUpdates);
-      await savePackageJson(updated, findPackageJson());
+      if (rootUpdates.length > 0) {
+        workspaceResults.push({
+          name: "root",
+          path: ".",
+          updates: rootUpdates,
+        });
+        allUpdates.push(...rootUpdates);
+      }
+
+      totalDeps += Object.keys(rootDeps).length;
+
+      if (upgrade && rootUpdates.length > 0) {
+        const updated = applyUpdates(rootPackageJson, rootUpdates);
+        await savePackageJson(updated, findPackageJson());
+      }
     }
   }
 
   for (const workspace of workspacePackages) {
+    if (!shouldProcessWorkspace(workspace.name, workspaces)) {
+      continue;
+    }
+
     const workspaceDeps = getAllDependencies(workspace.packageJson);
 
     if (Object.keys(workspaceDeps).length === 0) continue;
@@ -250,7 +289,16 @@ async function processWorkspaces(options: Options): Promise<Results> {
       filter
     );
 
-    allUpdates.push(...workspaceUpdates);
+    if (workspaceUpdates.length > 0) {
+      const relativePath = relative(process.cwd(), workspace.path);
+      workspaceResults.push({
+        name: workspace.name,
+        path: relativePath || workspace.path,
+        updates: workspaceUpdates,
+      });
+      allUpdates.push(...workspaceUpdates);
+    }
+
     totalDeps += Object.keys(workspaceDeps).length;
 
     if (upgrade && workspaceUpdates.length > 0) {
@@ -267,11 +315,28 @@ async function processWorkspaces(options: Options): Promise<Results> {
     updates: allUpdates,
     total: totalDeps,
     upgraded: upgrade && allUpdates.length > 0,
+    workspaces: workspaceResults,
   };
+}
+
+async function detectMonorepo(): Promise<boolean> {
+  try {
+    const rootDir = dirname(findPackageJson());
+    const workspaces = await detectWorkspaces(rootDir);
+    return workspaces.length > 0;
+  } catch {
+    return false;
+  }
 }
 
 export async function checkUpdates(options: Options = {}): Promise<Results> {
   if (options.workspaces) {
+    return await processWorkspaces(options);
+  }
+
+  const isMonorepo = await detectMonorepo();
+
+  if (isMonorepo) {
     return await processWorkspaces(options);
   }
 
