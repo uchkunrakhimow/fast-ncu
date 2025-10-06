@@ -1,6 +1,6 @@
 {
   "name": "fast-ncu",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "description": "fncu - A blazing-fast CLI tool for checking npm package updates",
   "type": "module",
   "bin": {

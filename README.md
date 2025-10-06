@@ -6,6 +6,14 @@
   <img src="https://raw.githubusercontent.com/uchkunrakhimow/fast-ncu/refs/heads/master/docs/fast-ncu-splash.png" alt="fncu CLI splash" width="80%" />
 </p>
 
+<p align="center">
+  <img src="https://img.shields.io/npm/v/fast-ncu" alt="npm version" />
+  <img src="https://img.shields.io/npm/dm/fast-ncu" alt="npm downloads" />
+  <img src="https://img.shields.io/badge/Bun-1.2+-000000" alt="Bun version" />
+  <img src="https://img.shields.io/badge/Node.js-22+-339933" alt="Node.js version" />
+  <img src="https://img.shields.io/badge/License-MIT-green" alt="License" />
+</p>
+
 ---
 
 ## ⚡ Quickstart
@@ -19,12 +27,6 @@ fncu -u
 
 # Upgrade fncu to the latest version
 fncu upgrade
-
-# Auto-detect and check workspaces
-fncu
-
-# Check specific workspace
-fncu -w api
 ```
 
 ## ✨ Features
