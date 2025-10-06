@@ -1,4 +1,4 @@
-import { cyan, green, red, yellow } from "colorette";
+import { cyan, dim, green, red, yellow } from "colorette";
 import ora from "ora";
 import { COMMAND_NAME, FULL_COMMAND_NAME, VERSION } from "./fetcher";
 
@@ -6,6 +6,22 @@ interface UpgradeInfo {
   current: string;
   latest: string;
   needsUpgrade: boolean;
+}
+
+class UpgradeCheckError extends Error {
+  constructor() {
+    super(
+      "Failed to check for updates - network error or registry unavailable"
+    );
+    this.name = "UpgradeCheckError";
+  }
+}
+
+class InstallationError extends Error {
+  constructor() {
+    super("Failed to upgrade package - installation error");
+    this.name = "InstallationError";
+  }
 }
 
 async function fetchLatestVersion(): Promise<string | null> {
@@ -46,7 +62,7 @@ function compareVersions(current: string, latest: string): boolean {
 async function checkUpgrade(): Promise<UpgradeInfo> {
   const latest = await fetchLatestVersion();
   if (!latest) {
-    throw new Error("Failed to check for updates");
+    throw new UpgradeCheckError();
   }
 
   const needsUpgrade = compareVersions(VERSION, latest);
@@ -87,7 +103,7 @@ async function installPackage(pkgManager: string): Promise<void> {
   await proc.exited;
 
   if (proc.exitCode !== 0) {
-    throw new Error("Failed to upgrade package");
+    throw new InstallationError();
   }
 }
 
@@ -99,18 +115,22 @@ async function runUpgrade(pkgManager: string): Promise<void> {
 
   let progress = 0;
   const progressInterval = setInterval(() => {
-    progress += 10;
-    if (progress <= 90) {
-      const bar =
-        "█".repeat(Math.floor(progress / 5)) +
-        "░".repeat(20 - Math.floor(progress / 5));
+    progress += 5;
+    if (progress <= 100) {
+      const filled = Math.floor(progress / 5);
+      const empty = 20 - filled;
+      const bar = "█".repeat(filled) + "░".repeat(empty);
       spinner.text = cyan(`Installing ${bar} ${progress}%`);
     }
-  }, 150);
+  }, 100);
 
   try {
     await installPackage(pkgManager);
     clearInterval(progressInterval);
+
+    spinner.text = cyan(`Installing ${"█".repeat(20)} 100%`);
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
     spinner.succeed(green("Installation complete"));
   } catch (error) {
     clearInterval(progressInterval);
@@ -120,7 +140,7 @@ async function runUpgrade(pkgManager: string): Promise<void> {
 }
 
 export async function selfUpgrade(): Promise<void> {
-  console.log(cyan(`\nChecking for ${COMMAND_NAME} updates...\n`));
+  console.log(cyan(`\nChecking for ${COMMAND_NAME} updates...`));
 
   const startTime = Date.now();
 
@@ -130,32 +150,41 @@ export async function selfUpgrade(): Promise<void> {
     if (!info.needsUpgrade) {
       console.log(green(`Already on latest version (${info.current})`));
       console.log(
-        cyan(`Completed in ${((Date.now() - startTime) / 1000).toFixed(2)}s\n`)
+        dim(`Completed in ${((Date.now() - startTime) / 1000).toFixed(2)}s`)
       );
       return;
     }
 
     console.log(
-      yellow(`New version available: ${info.current} → ${info.latest}\n`)
+      yellow(`New version available: ${info.current} → ${info.latest}`)
     );
 
     const pkgManager = await detectGlobalPackageManager();
     await runUpgrade(pkgManager);
 
-    console.log(green(`\nSuccessfully upgraded to ${info.latest}`));
+    console.log(green(`Successfully upgraded to ${info.latest}`));
     console.log(
-      cyan(`Completed in ${((Date.now() - startTime) / 1000).toFixed(2)}s\n`)
+      dim(`Completed in ${((Date.now() - startTime) / 1000).toFixed(2)}s`)
     );
   } catch (error) {
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
-    if (error instanceof Error) {
-      console.error(red(`\n${error.message}`));
+    if (error instanceof UpgradeCheckError) {
+      console.error(red(error.message));
+      console.log(dim(`Failed after ${duration}s`));
+      process.exit(2);
+    } else if (error instanceof InstallationError) {
+      console.error(red(error.message));
+      console.log(dim(`Failed after ${duration}s`));
+      process.exit(3);
+    } else if (error instanceof Error) {
+      console.error(red(error.message));
+      console.log(dim(`Failed after ${duration}s`));
+      process.exit(1);
     } else {
-      console.error(red("\nUnexpected error occurred"));
+      console.error(red("Unexpected error occurred"));
+      console.log(dim(`Failed after ${duration}s`));
+      process.exit(1);
     }
-
-    console.log(cyan(`Failed after ${duration}s\n`));
-    process.exit(1);
   }
 }

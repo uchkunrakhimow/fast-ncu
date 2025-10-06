@@ -4,7 +4,7 @@
 */
 
 import { describe, expect, it } from "bun:test";
-import { getUpdateLevel, parseVer, shouldUpdate } from "../lib/utils/ver";
+import { getUpdateLevel, parseVer, shouldUpdate } from "../lib/utils/version";
 
 describe("ver utils", () => {
   describe("parseVer", () => {

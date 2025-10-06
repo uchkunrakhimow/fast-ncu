@@ -19,6 +19,9 @@ fncu -u
 
 # Upgrade fncu to the latest version
 fncu upgrade
+
+# Check workspaces in monorepo
+fncu --workspaces
 ```
 
 ## ✨ Features
@@ -30,6 +33,7 @@ fncu upgrade
 - Auto-upgrade dependencies
 - Built-in caching
 - Detects npm, yarn, pnpm, or bun automatically
+- Monorepo / workspace support
 
 ## 📦 Installation
 

@@ -16,7 +16,7 @@ This guide covers essential usage of fncu (fast-ncu) for checking and updating n
 | `--filter <pattern>` | `-f`  | Filter packages by name (regex)          | -       |
 | `--json`             | `-j`  | Output as JSON                           | `false` |
 | `--target <level>`   | `-t`  | Update target: auto, major, minor, patch | `auto`  |
-| `--workspaces`       | `-w`  | Check workspaces                         | `false` |
+| `--workspaces`       | `-w`  | Check workspaces in monorepo             | `false` |
 
 ## Basic Examples
 
@@ -137,6 +137,68 @@ fncu -u --filter "react" --target minor
 
 # Check major updates for TypeScript packages with JSON output
 fncu --json --filter "typescript" --target major
+
+# Check all workspaces in monorepo
+fncu --workspaces
+
+# Update all workspaces with filter
+fncu -u --workspaces --filter "@myorg"
+```
+
+## Monorepo / Workspaces
+
+fncu supports monorepo workspaces for npm, yarn, pnpm, and bun.
+
+### Workspace Detection
+
+Automatically detects workspaces from:
+- `package.json` with `workspaces` field (npm/yarn/bun)
+- `pnpm-workspace.yaml` (pnpm)
+
+### Examples
+
+```bash
+# Check all packages in monorepo
+fncu --workspaces
+
+# Update all workspace packages
+fncu -u --workspaces
+
+# Filter workspace packages
+fncu --workspaces --filter "@myorg"
+
+# Target specific update levels
+fncu --workspaces --target minor
+```
+
+### Workspace Structure
+
+Supported workspace patterns:
+```json
+{
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ]
+}
+```
+
+Or:
+```json
+{
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  }
+}
+```
+
+For pnpm:
+```yaml
+packages:
+  - 'packages/*'
+  - 'apps/*'
 ```
 
 ## Configuration
@@ -162,12 +224,7 @@ fncu automatically detects your package manager:
 
 ### Cache issues
 
-Clear cache if experiencing stale data:
-
-```bash
-rm -rf ~/.fncu/cache
-fncu
-```
+Restart fncu if experiencing stale data (cache is session-based).
 
 ### Performance issues
 

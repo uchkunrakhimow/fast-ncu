@@ -14,6 +14,12 @@ export interface Options {
   workspaces?: boolean;
 }
 
+export interface WorkspacePackage {
+  name: string;
+  path: string;
+  packageJson: Record<string, unknown>;
+}
+
 export interface Results {
   updates: Update[];
   total: number;
