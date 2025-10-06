@@ -1,6 +1,5 @@
 import { cyan, green, red, yellow } from "colorette";
 import ora from "ora";
-import { detectPkgManager } from "../utils/pkg";
 import { COMMAND_NAME, FULL_COMMAND_NAME, VERSION } from "./fetcher";
 
 interface UpgradeInfo {
@@ -128,8 +127,29 @@ export async function selfUpgrade(): Promise<void> {
       yellow(`📦 New version available: ${info.current} → ${info.latest}\n`)
     );
 
-    const pkgManager = await detectPkgManager();
-    const globalPkgManager = pkgManager.name === "bun" ? "bun" : "npm";
+    let globalPkgManager = "npm";
+
+    try {
+      const bunCheck = Bun.spawn(["bun", "--version"], {
+        stdout: "pipe",
+        stderr: "pipe",
+      });
+      await bunCheck.exited;
+
+      if (bunCheck.exitCode === 0) {
+        const bunList = Bun.spawn(["bun", "pm", "ls", "-g"], {
+          stdout: "pipe",
+        });
+        const bunOutput = await new Response(bunList.stdout).text();
+        await bunList.exited;
+
+        if (bunOutput.includes("fast-ncu")) {
+          globalPkgManager = "bun";
+        }
+      }
+    } catch {
+      globalPkgManager = "npm";
+    }
 
     await runUpgrade(
       globalPkgManager,
