@@ -1,3 +1,8 @@
+/*
+ Version utility tests
+ Tests for semver parsing and update logic
+*/
+
 import { describe, expect, it } from "bun:test";
 import { getUpdateLevel, parseVer, shouldUpdate } from "../lib/utils/ver";
 

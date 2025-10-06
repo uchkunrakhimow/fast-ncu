@@ -3,26 +3,28 @@
   "version": "1.0.8",
   "description": "fncu - A blazing-fast CLI tool for checking npm package updates",
   "type": "module",
+  "main": "./dist/fncu.js",
+  "module": "./dist/fncu.js",
   "bin": {
-    "fncu": "./bin/fncu.ts",
-    "fast-ncu": "./bin/fncu.ts"
+    "fncu": "./dist/fncu.js",
+    "fast-ncu": "./dist/fncu.js"
+  },
+  "exports": {
+    ".": "./dist/fncu.js"
   },
   "files": [
-    "bin/**/*",
-    "lib/**/*",
-    "README.md"
+    "dist",
+    "lib",
+    "bin",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "dev": "bun run bin/fncu.ts",
-    "dev:watch": "bun run --hot bin/fncu.ts",
-    "build": "bun build bin/fncu.ts --outdir=dist --target=node",
+    "dev:watch": "bun --watch bin/fncu.ts",
+    "build": "bun build bin/fncu.ts --outfile=dist/fncu.js --target=node",
     "test": "bun test",
-    "test:watch": "bun test --watch",
-    "start": "bun run bin/fncu.ts",
-    "version:patch": "npm version patch && npm publish",
-    "version:minor": "npm version minor && npm publish",
-    "version:major": "npm version major && npm publish",
-    "prepublish": "bun run build && bun test"
+    "prepublishOnly": "bun run build"
   },
   "keywords": [
     "npm",
@@ -30,10 +32,22 @@
     "updates",
     "cli",
     "semver",
-    "registry"
+    "registry",
+    "dependency",
+    "version",
+    "update-checker",
+    "fast"
   ],
   "author": "Uchkun Rakhimov <uchkunrakhimov@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uchkunrakhimow/fast-ncu.git"
+  },
+  "homepage": "https://github.com/uchkunrakhimow/fast-ncu#readme",
+  "bugs": {
+    "url": "https://github.com/uchkunrakhimow/fast-ncu/issues"
+  },
   "dependencies": {
     "commander": "^14.0.1",
     "colorette": "^2.0.20",
@@ -43,8 +57,7 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/semver": "^7.7.1",
-    "typescript": "^5.9.3",
-    "vitest": "^3.2.4"
+    "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=22"
