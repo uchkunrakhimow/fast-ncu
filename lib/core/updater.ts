@@ -16,21 +16,21 @@ const VERSION_PREFIX = "^";
 
 class PackageNotFoundError extends Error {
   constructor() {
-    super("package.json not found in current directory or parent directories");
+    super("No package.json found. Run this command from a project directory.");
     this.name = "PackageNotFoundError";
   }
 }
 
 class InvalidPackageError extends Error {
   constructor() {
-    super("Invalid package.json - check JSON syntax");
+    super("Invalid package.json. Check your JSON syntax.");
     this.name = "InvalidPackageError";
   }
 }
 
 class NetworkError extends Error {
   constructor() {
-    super("Network connection failed - check your internet connection");
+    super("Network error. Check your internet connection and try again.");
     this.name = "NetworkError";
   }
 }
