@@ -81,12 +81,22 @@ function renderTable(updates: Update[]): void {
 
 function handleError(error: unknown, duration: string): never {
   if (error instanceof Error) {
-    if (error.message.includes("package.json not found")) {
-      logger.error(error.message);
-    } else if (error.message.includes("Network connection failed")) {
-      logger.error(error.message);
+    if (
+      error.message.includes("package.json not found") ||
+      error.message.includes("No package.json found")
+    ) {
+      logger.error(
+        "No package.json found in this directory. Run this command from a project directory."
+      );
+    } else if (
+      error.message.includes("Network connection failed") ||
+      error.message.includes("Network error")
+    ) {
+      logger.error(
+        "Network error. Check your internet connection and try again."
+      );
     } else if (error.message.includes("Invalid package.json")) {
-      logger.error(error.message);
+      logger.error("Invalid package.json. Check your JSON syntax.");
     } else {
       logger.error("Unexpected error occurred");
       if (process.env.DEBUG) {
