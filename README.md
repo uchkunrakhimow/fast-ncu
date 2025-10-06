@@ -8,19 +8,7 @@
 
 ---
 
-## Quickstart
-
-### Installation
-
-```bash
-# Using npm
-npm install -g fast-ncu
-
-# Using Bun
-bun install -g fast-ncu
-```
-
-### Basic Usage
+## ⚡ Quickstart
 
 ```bash
 # Check for updates
@@ -31,108 +19,26 @@ fncu -u
 
 # Upgrade fncu to the latest version
 fncu upgrade
-
-# JSON output
-fncu --json
-
-# Filter packages
-fncu --filter "react|typescript"
 ```
 
 ## ✨ Features
 
-- ⚡ **Ultra-fast** - Parallel fetching with intelligent batching
-- 🎯 **Smart filtering** - Filter packages by name using regex
-- 📊 **Multiple formats** - Human-readable table or JSON output
-- 🎛️ **Flexible targeting** - Choose update level: major, minor, or patch
-- 🔄 **Auto-upgrade** - Update package.json with latest versions
-- 🚀 **Self-upgrade** - Upgrade fncu itself with animated progress
-- 💾 **Intelligent caching** - Avoid redundant API calls
-- 🔧 **Package manager detection** - Auto-detect npm, yarn, pnpm, or bun
+- Ultra-fast parallel package fetching
+- Smart filtering with regex support
+- Table or JSON output
+- Targeted updates: major, minor, or patch
+- Auto-upgrade dependencies
+- Built-in caching
+- Detects npm, yarn, pnpm, or bun automatically
 
-## 📖 Usage
-
-### Commands
-
-| Command   | Aliases        | Description                        |
-| --------- | -------------- | ---------------------------------- |
-| `upgrade` | `self-upgrade` | Upgrade fncu to the latest version |
-
-### Command Line Options
-
-| Option               | Short | Description                              | Default |
-| -------------------- | ----- | ---------------------------------------- | ------- |
-| `--upgrade`          | `-u`  | Upgrade package.json dependencies        | `false` |
-| `--filter <pattern>` | `-f`  | Filter packages by name (regex)          | -       |
-| `--json`             | `-j`  | Output as JSON                           | `false` |
-| `--target <level>`   | `-t`  | Update target: auto, major, minor, patch | `auto`  |
-| `--workspaces`       | `-w`  | Check workspaces                         | `false` |
-
-### Examples
-
-#### Check for updates
+## 📦 Installation
 
 ```bash
-fncu
-```
+# Using npm
+npm install -g fast-ncu
 
-```
-🔍 3 updates available:
-
-┌─────────────┬─────────────┬─────────────┬─────────┐
-│ Package     │ Current     │ Latest      │ Type    │
-├─────────────┼─────────────┼─────────────┼─────────┤
-│ react       │ 18.0.0      │ 18.2.0      │ minor   │
-│ typescript  │ 4.9.0       │ 5.0.0       │ major   │
-│ lodash      │ 4.17.20     │ 4.17.21     │ patch   │
-└─────────────┴─────────────┴─────────────┴─────────┘
-
-🔧 Run: fncu -u to update
-⚡ Completed in 0.45s
-```
-
-#### Upgrade fncu itself
-
-```bash
-fncu upgrade
-```
-
-```
-🔍 Checking for fncu updates...
-
-📦 New version available: 1.0.10 → 1.0.11
-
-✔ Installation complete
-🎉 Successfully upgraded to 1.0.11!
-⚡ Completed in 2.34s
-```
-
-#### Update with filtering
-
-```bash
-fncu -u --filter "react|typescript" --target minor
-```
-
-#### JSON output
-
-```bash
-fncu --json
-```
-
-```json
-{
-  "updates": [
-    {
-      "name": "react",
-      "current": "^18.0.0",
-      "latest": "^18.2.0",
-      "diff": "+0.2.0",
-      "type": "minor"
-    }
-  ],
-  "total": 15,
-  "upgraded": false
-}
+# Using Bun
+bun install -g fast-ncu
 ```
 
 ## 🛠️ Development
@@ -163,14 +69,10 @@ bun test
 bun run build
 ```
 
----
-
 ## 📚 Documentation
 
-- [**Usage Guide**](./docs/usage.md) - Detailed usage examples
-- [**Contributing**](./docs/contributing.md) - How to contribute
-
----
+- [**Usage Guide**](./docs/usage.md) - Detailed usage and examples
+- [**Contributing**](./docs/contributing.md) - Contribution guidelines
 
 ## 📄 License
 

@@ -1,42 +1,14 @@
 # Usage Guide
 
-This guide covers the essential usage of fncu (fast-ncu) for checking and updating npm packages.
-
-## Basic Usage
-
-### Checking for Updates
-
-```bash
-fncu
-```
-
-This will scan your `package.json` and display available updates in a formatted table.
-
-### Updating Dependencies
-
-```bash
-fncu -u
-```
-
-This will automatically update your `package.json` with the latest versions.
-
-### Upgrading fncu
-
-```bash
-fncu upgrade
-# or
-fncu self-upgrade
-```
-
-This will upgrade fncu to the latest version with an animated progress bar. If you're already on the latest version, it will display a message confirming this.
+This guide covers essential usage of fncu (fast-ncu) for checking and updating npm packages.
 
 ## Commands
 
-| Command   | Aliases        | Description                        |
-| --------- | -------------- | ---------------------------------- |
-| `upgrade` | `self-upgrade` | Upgrade fncu to the latest version |
+| Command   | Description                        |
+| --------- | ---------------------------------- |
+| `upgrade` | Upgrade fncu to the latest version |
 
-## Command Line Options
+## Options
 
 | Option               | Short | Description                              | Default |
 | -------------------- | ----- | ---------------------------------------- | ------- |
@@ -46,38 +18,102 @@ This will upgrade fncu to the latest version with an animated progress bar. If y
 | `--target <level>`   | `-t`  | Update target: auto, major, minor, patch | `auto`  |
 | `--workspaces`       | `-w`  | Check workspaces                         | `false` |
 
-## Examples
+## Basic Examples
 
-### Basic Examples
+### Check for updates
 
 ```bash
-# Check for updates
 fncu
+```
 
-# Update all packages
+Output:
+
+```
+3 updates available:
+
+┌─────────────┬─────────────┬─────────────┬─────────┐
+│ Package     │ Current     │ Latest      │ Type    │
+├─────────────┼─────────────┼─────────────┼─────────┤
+│ react       │ 18.0.0      │ 18.2.0      │ minor   │
+│ typescript  │ 4.9.0       │ 5.0.0       │ major   │
+│ lodash      │ 4.17.20     │ 4.17.21     │ patch   │
+└─────────────┴─────────────┴─────────────┴─────────┘
+
+Run: fncu -u to update
+Completed in 0.45s
+```
+
+### Update dependencies
+
+```bash
 fncu -u
+```
 
-# Upgrade fncu itself
+### Upgrade fncu
+
+```bash
 fncu upgrade
+```
 
-# Get JSON output
+Output when upgrade is available:
+
+```
+Checking for fncu updates...
+
+New version available: 1.0.10 → 1.0.11
+
+Installation complete
+Successfully upgraded to 1.0.11!
+Completed in 2.34s
+```
+
+Output when already up-to-date:
+
+```
+Checking for fncu updates...
+
+Already on latest version (1.0.10)
+Completed in 0.42s
+```
+
+### JSON output
+
+```bash
 fncu --json
 ```
 
-### Filtering Examples
+Output:
+
+```json
+{
+  "updates": [
+    {
+      "name": "react",
+      "current": "^18.0.0",
+      "latest": "^18.2.0",
+      "diff": "+0.2.0",
+      "type": "minor"
+    }
+  ],
+  "total": 15,
+  "upgraded": false
+}
+```
+
+## Filtering Examples
 
 ```bash
-# Check only React packages
+# Filter by package name
 fncu --filter "react"
 
-# Check multiple packages
+# Multiple packages
 fncu --filter "react|typescript|lodash"
 
-# Check packages starting with "@types"
+# Packages starting with @types
 fncu --filter "^@types/"
 ```
 
-### Targeting Examples
+## Targeting Examples
 
 ```bash
 # Only major updates
@@ -86,11 +122,14 @@ fncu --target major
 # Only minor updates
 fncu --target minor
 
+# Only patch updates
+fncu --target patch
+
 # Update only minor versions
 fncu -u --target minor
 ```
 
-### Combined Examples
+## Combined Examples
 
 ```bash
 # Update only React packages to minor versions
@@ -117,100 +156,31 @@ fncu automatically detects your package manager:
 - `package-lock.json` → npm
 - `yarn.lock` → yarn
 - `pnpm-lock.yaml` → pnpm
-- `bun.lockb` → bun
-
-### Cache Management
-
-fncu uses intelligent caching:
-
-- **Cache Location**: `~/.fncu/cache`
-- **Cache Duration**: 24 hours
-
-To clear the cache:
-
-```bash
-rm -rf ~/.fncu/cache
-```
-
-## Self-Upgrade Examples
-
-### Check and upgrade fncu
-
-```bash
-# Upgrade to the latest version
-fncu upgrade
-```
-
-**Output when upgrade is needed:**
-
-```
-🔍 Checking for fncu updates...
-
-📦 New version available: 1.0.10 → 1.0.11
-
-⠋ Installing ████████████████████ 100%
-✔ Installation complete
-🎉 Successfully upgraded to 1.0.11!
-⚡ Completed in 2.34s
-```
-
-**Output when already up-to-date:**
-
-```
-🔍 Checking for fncu updates...
-
-✨ Already on latest version (1.0.10)
-⚡ Completed in 0.42s
-```
-
-### Using alias
-
-```bash
-fncu self-upgrade
-```
-
-Both `fncu upgrade` and `fncu self-upgrade` work identically.
+- `bun.lock` → bun
 
 ## Troubleshooting
 
-### Common Issues
+### Cache issues
 
-#### "No updates available" but packages are outdated
+Clear cache if experiencing stale data:
 
 ```bash
-# Clear cache and try again
 rm -rf ~/.fncu/cache
 fncu
 ```
 
-#### Slow performance
+### Performance issues
+
+Reduce batch size:
 
 ```bash
-# Clear cache
-rm -rf ~/.fncu/cache
-
-# Reduce batch size
 FNCU_BATCH_SIZE=25 fncu
 ```
 
-#### Permission errors
+### Custom registry
 
 ```bash
-# Fix npm permissions
-sudo chown -R $(whoami) ~/.npm
-```
-
-#### Registry errors
-
-```bash
-# Set custom registry
 NPM_REGISTRY=https://your-registry.com fncu
-```
-
-### Debug Mode
-
-```bash
-DEBUG=fncu:* fncu
 ```
 
 ## CI/CD Integration
@@ -218,7 +188,7 @@ DEBUG=fncu:* fncu
 ### GitHub Actions
 
 ```yaml
-name: Check for updates
+name: Check updates
 on: [schedule]
 jobs:
   check-updates:
@@ -236,14 +206,10 @@ jobs:
 
 ```bash
 #!/bin/bash
-echo "Checking for package updates..."
 fncu --json > updates.json
 
 if [ $(jq '.updates | length' updates.json) -gt 0 ]; then
-    echo "Updates found! Updating..."
     fncu -u
     npm install
-else
-    echo "All packages are up to date!"
 fi
 ```

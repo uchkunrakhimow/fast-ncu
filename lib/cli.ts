@@ -17,7 +17,7 @@ program
   .addHelpText(
     "before",
     `Usage: ${COMMAND_NAME} [options] or ${FULL_COMMAND_NAME} [options]
-       ${COMMAND_NAME} upgrade - Upgrade ${COMMAND_NAME} to the latest version\n`
+       ${COMMAND_NAME} upgrade - Upgrade to the latest version\n`
   )
   .option("-u, --upgrade", "upgrade package.json dependencies")
   .option("-f, --filter <pattern>", "filter packages by name (regex)")
@@ -119,7 +119,6 @@ program
 
 program
   .command("upgrade")
-  .alias("self-upgrade")
   .description("Upgrade fncu to the latest version")
   .action(async () => {
     await selfUpgrade();
