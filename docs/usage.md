@@ -20,6 +20,22 @@ fncu -u
 
 This will automatically update your `package.json` with the latest versions.
 
+### Upgrading fncu
+
+```bash
+fncu upgrade
+# or
+fncu self-upgrade
+```
+
+This will upgrade fncu to the latest version with an animated progress bar. If you're already on the latest version, it will display a message confirming this.
+
+## Commands
+
+| Command   | Aliases        | Description                        |
+| --------- | -------------- | ---------------------------------- |
+| `upgrade` | `self-upgrade` | Upgrade fncu to the latest version |
+
 ## Command Line Options
 
 | Option               | Short | Description                              | Default |
@@ -40,6 +56,9 @@ fncu
 
 # Update all packages
 fncu -u
+
+# Upgrade fncu itself
+fncu upgrade
 
 # Get JSON output
 fncu --json
@@ -112,6 +131,45 @@ To clear the cache:
 ```bash
 rm -rf ~/.fncu/cache
 ```
+
+## Self-Upgrade Examples
+
+### Check and upgrade fncu
+
+```bash
+# Upgrade to the latest version
+fncu upgrade
+```
+
+**Output when upgrade is needed:**
+
+```
+🔍 Checking for fncu updates...
+
+📦 New version available: 1.0.10 → 1.0.11
+
+⠋ Installing ████████████████████ 100%
+✔ Installation complete
+🎉 Successfully upgraded to 1.0.11!
+⚡ Completed in 2.34s
+```
+
+**Output when already up-to-date:**
+
+```
+🔍 Checking for fncu updates...
+
+✨ Already on latest version (1.0.10)
+⚡ Completed in 0.42s
+```
+
+### Using alias
+
+```bash
+fncu self-upgrade
+```
+
+Both `fncu upgrade` and `fncu self-upgrade` work identically.
 
 ## Troubleshooting
 

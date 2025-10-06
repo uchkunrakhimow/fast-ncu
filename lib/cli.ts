@@ -4,6 +4,7 @@ import { blue, bold, cyan, green, red, yellow } from "colorette";
 import { Command } from "commander";
 import { checkUpdates } from "./core/checker";
 import { COMMAND_NAME, FULL_COMMAND_NAME, VERSION } from "./core/fetcher";
+import { selfUpgrade } from "./core/self-upgrade";
 import type { Options } from "./types";
 import { detectPkgManager } from "./utils/pkg";
 
@@ -15,7 +16,8 @@ program
   .version(VERSION)
   .addHelpText(
     "before",
-    `Usage: ${COMMAND_NAME} [options] or ${FULL_COMMAND_NAME} [options]\n`
+    `Usage: ${COMMAND_NAME} [options] or ${FULL_COMMAND_NAME} [options]
+       ${COMMAND_NAME} upgrade - Upgrade ${COMMAND_NAME} to the latest version\n`
   )
   .option("-u, --upgrade", "upgrade package.json dependencies")
   .option("-f, --filter <pattern>", "filter packages by name (regex)")
@@ -113,6 +115,14 @@ program
       }
       process.exit(1);
     }
+  });
+
+program
+  .command("upgrade")
+  .alias("self-upgrade")
+  .description("Upgrade fncu to the latest version")
+  .action(async () => {
+    await selfUpgrade();
   });
 
 program.parse();

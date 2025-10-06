@@ -29,6 +29,9 @@ fncu
 # Update package.json
 fncu -u
 
+# Upgrade fncu to the latest version
+fncu upgrade
+
 # JSON output
 fncu --json
 
@@ -43,10 +46,17 @@ fncu --filter "react|typescript"
 - 📊 **Multiple formats** - Human-readable table or JSON output
 - 🎛️ **Flexible targeting** - Choose update level: major, minor, or patch
 - 🔄 **Auto-upgrade** - Update package.json with latest versions
+- 🚀 **Self-upgrade** - Upgrade fncu itself with animated progress
 - 💾 **Intelligent caching** - Avoid redundant API calls
 - 🔧 **Package manager detection** - Auto-detect npm, yarn, pnpm, or bun
 
 ## 📖 Usage
+
+### Commands
+
+| Command   | Aliases        | Description                        |
+| --------- | -------------- | ---------------------------------- |
+| `upgrade` | `self-upgrade` | Upgrade fncu to the latest version |
 
 ### Command Line Options
 
@@ -67,7 +77,7 @@ fncu
 ```
 
 ```
-📦 3 updates available:
+🔍 3 updates available:
 
 ┌─────────────┬─────────────┬─────────────┬─────────┐
 │ Package     │ Current     │ Latest      │ Type    │
@@ -77,8 +87,24 @@ fncu
 │ lodash      │ 4.17.20     │ 4.17.21     │ patch   │
 └─────────────┴─────────────┴─────────────┴─────────┘
 
-💡 Run: fncu -u to update
-⚡ 0.45s
+🔧 Run: fncu -u to update
+⚡ Completed in 0.45s
+```
+
+#### Upgrade fncu itself
+
+```bash
+fncu upgrade
+```
+
+```
+🔍 Checking for fncu updates...
+
+📦 New version available: 1.0.10 → 1.0.11
+
+✔ Installation complete
+🎉 Successfully upgraded to 1.0.11!
+⚡ Completed in 2.34s
 ```
 
 #### Update with filtering
